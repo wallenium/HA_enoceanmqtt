@@ -59,7 +59,32 @@ Assuming you want this tool to run as a daemon, which gets automatically started
  - `systemctl start enoceanmqtt`
 
 ## Docker Installation
-A docker image is not yet available but I am working on it.  
+A docker image is available. 
+
+For usage with docker compose, use the following compose file and change if required
+You need to change the following parameters
+  - /dev/ttyUSB0:/dev/ttyUSB0   - the USB300 Enocean stick
+  - networks is required if you do not run home assistant in host mode, then it should run in the same network to avoid communication issues
+  - Imgae, use makgitdev/ha_enoceanmqtt_dev-aarch64 for 64 bit raspberryOS, armhf for 32 bit OS (even with loaded 64bit Kernel)
+
+You are able to override the existing EEP.xml if you changed it. This is not required by default.
+  - ./volumes/ha_enoceanmqtt/EEP.xml:/usr/local/lib/python3.11/site-packages/enocean-0.60.1-py3.11.egg/enocean/protocol/EEP.xml
+  you are able to
+
+```
+ha_enoceanmqtt_dev:
+    container_name: ha_enoceanmqtt_dev
+    image: makgitdev/ha_enoceanmqtt_dev-aarch64
+    restart: unless-stopped
+    volumes:
+      - ./volumes/ha_enoceanmqtt/config:/config
+     #- ./volumes/ha_enoceanmqtt/EEP.xml:/usr/local/lib/python3.11/site-packages/enocean-0.60.1-py3.11.egg/enocean/protocol/EEP.xml
+    devices:
+      - /dev/ttyUSB0:/dev/ttyUSB0
+    command: /config/enoceanmqtt.conf
+    #networks:
+    #  - iot-net
+```
 
 <img src="https://raw.githubusercontent.com/mak-gitdev/HA_enoceanmqtt/master/.github/images/install_docker.svg" alt="Install Docker" width="75%"/>
 <br/><br/>
